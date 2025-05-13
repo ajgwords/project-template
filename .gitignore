@@ -173,5 +173,5 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
-# folders not to upload
-/data
+# data not to upload
+/data/*.tif
