@@ -5,11 +5,15 @@ This template provides a layout of directories useful for my coding related proj
 
 ## Initialisation
 
+In GitHub fork this repo if you want to use it in your own account. Make sure that the repo is set to be a template (see https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-template-repository). Then use that template to create new repositories (see https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template), clone and use as usual. 
 
+Make sure that you update the .gitignore file to work as you want it to.
 
 ## pixi
 
-pixi is a package management tool leveraging the existing _conda_ ecosystem to obtain packages written in Python, C, C++, and many other languages. Like _uv_ it allows reproducibility through dedicated, isolated environments that can be easily recreated. It ensures compatibility across Linux, macOS, Windows, and more.
+pixi is a package management tool leveraging the existing _conda_ ecosystem to obtain packages written in Python, C, C++, and many other languages. Like _uv_ it allows reproducibility through dedicated, isolated environments that can be easily recreated. It ensures compatibility across Linux, macOS, Windows, and more. Recommended for geospatial work due to the packages in conda-forge.
+
+It is useful for compatability across users to version control both the pixi.lock and pixi.toml files.
 
 
 * Install pixi if you don't have it already
@@ -54,9 +58,11 @@ rasterio = "==1.4.3"
 
 Example: `pixi add hvplot`
 
-* Running Jupyter notebooks
-
-`pixi run jupyter notebook`
+* Running Jupyter
+```
+pixi add jupyterlab
+pixi run jupyter lab
+```
 
   * or define custom tasks in pixi.toml
 ```
@@ -91,12 +97,12 @@ process = "python scripts/process.py"
   * Uses conda under the hood but with simpler syntax
   * Fast dependency resolution
   * Works well with complex C dependencies common in geospatial libraries
-
+  * Works with Jupyter and VS Code as well as others (just choose the correct kernel)
 
 
 ## uv
 
-uv is an extremely fast Python package and project manager, written in Rust.designed to be a single tool to replace pip, pip-tools, pipx, poetry, pyenv, twine, virtualenv, and more. It provides comprehensive project management, with a universal lockfile, installs and manages Python versions and runs and installs tools published as Python packages on PyPI.
+uv is an extremely fast Python package and project manager, written in Rust, designed to be a single tool to replace pip, pip-tools, pipx, poetry, pyenv, twine, virtualenv, and more. It provides comprehensive project management, with a universal lockfile, installs and manages Python versions and runs and installs tools published as Python packages on PyPI.
 
 * Install uv if you don't have it already
 
@@ -199,10 +205,9 @@ If your project directly requires GDAL, use pixi or mamba instead.
 
 * Or set up an environment file (environment.yml) for reproducibility e.g. 
 ```
-yamlname: geo_project
+name: geo_project
 channels:
   - conda-forge
-  - defaults
 dependencies:
   - python=3.12
   - geopandas
@@ -233,7 +238,4 @@ dependencies:
 * Search for available packages
 
 `mamba search -c conda-forge <package_name>`
-
-
-## Structure
 
