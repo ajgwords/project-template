@@ -98,6 +98,7 @@ process = "python scripts/process.py"
   * Fast dependency resolution
   * Works well with complex C dependencies common in geospatial libraries
   * Works with Jupyter and VS Code as well as others (just choose the correct kernel)
+    * On a Debian test system VS Code found the Pixi kernel automatically. On Fedora Sway it was unable to. Using `pixi add ipykernel` followed by `python -m ipykernel install --user --name=<your-env-name> --display-name "Pixi (<your-env-name>)"` the issue was fixed. The kernel was saved to `Installed kernelspec <your-env-name> in /home/al/.local/share/jupyter/kernels/<your-env-name>`. 
 
 
 ## uv
