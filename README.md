@@ -1,13 +1,157 @@
 # project-template
 A template repository for future projects.
 
-This template provides a layout of directories useful for my coding related projects. It also suggests different tools that could be used to manage the projects. The assumption is that Python will be the coding language and Jupyter notebooks will be heavily used for investigative work. 
+This template provides a layout of directories useful for my coding related projects. The assumption is that Python will be the coding language and Jupyter notebooks will be heavily used for investigative work. 
 
 ## Initialisation
 
 In GitHub fork this repo if you want to use it in your own account. Make sure that the repo is set to be a template (see https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-template-repository). Then use that template to create new repositories (see https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template), clone and use as usual. 
 
 Make sure that you update the .gitignore file to work as you want it to.
+
+
+# Geospatial Project
+
+## Setup
+
+This project uses pixi for Python environment management.
+
+### Installation
+
+1. Install dependencies:
+   ```bash
+   pixi install
+   ```
+
+2. Activate the environment:
+   ```bash
+   pixi shell
+   ```
+
+### Usage
+
+- Start Jupyter Lab: `pixi run jupyter`
+- Start Jupyter Notebook: `pixi run notebook`
+
+## Project Structure
+
+```
+├── data/           # Data files (not in version control)
+│   ├── raw/        # Original, unmodified data
+│   ├── processed/  # Cleaned and processed data
+│   └── outputs/    # Analysis outputs
+├── src/            # Source code
+│   ├── scripts/    # Standalone Python scripts
+│   ├── notebooks/  # Jupyter notebooks
+│   └── utils/      # Reusable utility functions
+├── docs/           # Documentation (not in version control)
+├── qgis-projects/  # QGIS project files (not in version control)
+└── README.md       # This file
+```
+
+## Notes
+
+- Data, documentation, and QGIS project folders are excluded from git
+- Use `pixi install` to set up the environment
+- All dependencies are managed through pixi.toml
+
+## VSCode Integration
+
+To use VSCode with Jupyter notebooks in the pixi environment:
+
+1. Install the Python and Jupyter extensions in VSCode
+2. Open VSCode in your project directory
+3. Open the command palette (Ctrl+Shift+P) and select "Python: Select Interpreter"
+4. Navigate to `.pixi/envs/default/bin/python` (this path appears after running `pixi install`)
+5. Create or open a `.ipynb` file
+6. VSCode will automatically use the pixi Python interpreter for notebooks
+
+Alternatively, you can:
+- Run `pixi shell` to activate the environment, then `code .` to open VSCode
+- Use the integrated terminal in VSCode and run `pixi shell` there
+- Just run `positron`
+
+## Python Project Structure for Sequential Execution
+
+To set up a main execution script that runs multiple code files in sequence:
+
+### Example Structure:
+```
+src/
+├── main.py           # Main execution script  
+├── scripts/
+│   ├── __init__.py   # Makes scripts a package
+│   ├── step1_data_prep.py
+│   ├── step2_analysis.py
+│   └── step3_visualization.py
+└── utils/
+    ├── __init__.py
+    └── helpers.py
+```
+
+### main.py Example:
+```python
+#!/usr/bin/env python3
+"""
+Main execution script for geospatial analysis pipeline
+"""
+
+import sys
+from pathlib import Path
+
+# Add src to path so we can import our modules
+src_path = Path(__file__).parent
+sys.path.append(str(src_path))
+
+from scripts import step1_data_prep, step2_analysis, step3_visualization
+
+def main():
+    """Run the complete analysis pipeline"""
+    print("Starting geospatial analysis pipeline...")
+    
+    try:
+        print("Step 1: Data preparation...")
+        step1_data_prep.run()
+        
+        print("Step 2: Analysis...")  
+        step2_analysis.run()
+        
+        print("Step 3: Visualization...")
+        step3_visualization.run()
+        
+        print("Pipeline completed successfully!")
+        
+    except Exception as e:
+        print(f"Pipeline failed: {e}")
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()
+```
+
+### Individual Script Example (step1_data_prep.py):
+```python
+"""Data preparation module"""
+
+def run():
+    """Main function for this step"""
+    print("  Loading and cleaning data...")
+    # Your data prep code here
+    pass
+
+def load_data():
+    """Helper function"""
+    pass
+
+# Allow script to be run standalone for testing
+if __name__ == "__main__":
+    run()
+```
+
+### Execution:
+- Run the full pipeline: `pixi run python src/main.py`
+- Run individual steps: `pixi run python src/scripts/step1_data_prep.py`
+- From activated shell: `python src/main.py`
 
 ## pixi
 
@@ -97,146 +241,5 @@ process = "python scripts/process.py"
   * Uses conda under the hood but with simpler syntax
   * Fast dependency resolution
   * Works well with complex C dependencies common in geospatial libraries
-  * Works with Jupyter and VS Code as well as others (just choose the correct kernel)
+  * Works with Jupyter and Positron as well as others (just choose the correct kernel)
     * On a Debian test system VS Code found the Pixi kernel automatically. On Fedora Sway it was unable to. Using `pixi add ipykernel` followed by `python -m ipykernel install --user --name=<your-env-name> --display-name "Pixi (<your-env-name>)"` the issue was fixed. The kernel was saved to `Installed kernelspec <your-env-name> in /home/al/.local/share/jupyter/kernels/<your-env-name>`. 
-
-
-## uv
-
-uv is an extremely fast Python package and project manager, written in Rust, designed to be a single tool to replace pip, pip-tools, pipx, poetry, pyenv, twine, virtualenv, and more. It provides comprehensive project management, with a universal lockfile, installs and manages Python versions and runs and installs tools published as Python packages on PyPI.
-
-* Install uv if you don't have it already
-
-`curl -LsSf https://astral.sh/uv/install.sh | sh`
-
-See https://docs.astral.sh/uv/ for details
-
-* Create a new virtual environment for your geospatial project
-
-`uv venv .venv`
-`source .venv/bin/activate` (Linux/macOS) or `.venv\Scripts\activate` (Windows)
-
-* Create a requirements file (requirements.txt) for your dependencies e.g.
-```
-geopandas
-rasterio
-xarray
-folium
-shapely
-pyproj
-hvplot
-pyogrio
-```
-
-* Install packages from requirements file
-
-`uv install -r requirements.txt`
-
-* Install a specific package
-
-`uv install package_name`
-
-* Running Jupyter notebooks
-
-Install Jupyter: `uv  install notebook jupyter`
-
-Or install and run JupyterLab: `uv run --with jupyter jupyter lab`
-
-
-* Export dependencies
-
-`uv pip freeze > requirements.txt`
-
-
-* Generate lock file for reproducibility
-
-`uv pip compile requirements.txt -o requirements.lock`
-
-* Install from lock file
-
-`uv pip install -r requirements.lock`
-
-* Check for outdated packages
-
-`uv pip list --outdated`
-
-* Upgrade packages
-
-uv pip install --upgrade package_name
-
-
-* Performance advantages of uv
-  * Much faster installation than pip (up to 10-100x)
-  * Optimized dependency resolution
-  * Excellent caching of package metadata
-
-_Important Note_: GDAL doesn't work so well with uv
-
-See https://github.com/astral-sh/uv/issues/11466
-
-If your project directly requires GDAL, use pixi or mamba instead. 
-
-`pyogrio` could be a replacement for direct use of GDAL (see https://github.com/geopandas/pyogrio)
-
-## mamba
-
-* Install mamba if you don't have it already
-
-`curl -L -O "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh"`
-
-`bash Miniforge3-$(uname)-$(uname -m).sh`
-
-* Create a new environment for your geospatial project
-
-`mamba create -n geo_project`
-
-`mamba activate geo_project`
-
-* Configure conda-forge as the default channel
-
-`mamba config --env --add channels conda-forge`
-
-`mamba config --env --set channel_priority strict`
-
-
-* Install key geospatial packages
-
-`mamba install geopandas rasterio xarray netcdf4 folium shapely pyproj`
-
-
-* Or set up an environment file (environment.yml) for reproducibility e.g. 
-```
-name: geo_project
-channels:
-  - conda-forge
-dependencies:
-  - python=3.12
-  - geopandas
-  - rasterio
-  - xarray
-  - folium
-  - shapely
-  - rtree
-  - pyproj
-```
-
-* Create environment from file
-
-`mamba env create -f environment.yml`
-
-* Update existing environment from file
-
-`mamba env update -f environment.yml --prune`
-
-* Export current environment to a file
-
-`mamba env export > environment.yml`
-
-* List installed packages
-
-`mamba list`
-
-* Search for available packages
-
-`mamba search -c conda-forge <package_name>`
-

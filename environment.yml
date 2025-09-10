@@ -1,7 +1,0 @@
-name: geo_project
-channels:
-  - conda-forge
-dependencies:
-  - python=3.12
-  - geopandas
-  - rasterio
